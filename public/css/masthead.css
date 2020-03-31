@@ -1,0 +1,8 @@
+.masthead {
+    height: 2vh;
+    min-height: 150px;
+    background-image: url("/bilder/bannerV1.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
