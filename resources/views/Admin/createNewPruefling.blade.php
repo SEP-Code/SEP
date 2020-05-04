@@ -89,6 +89,8 @@
     </div>
     <div class="form-group">
         <label for="kontoauszug">Überweisungsbeleg (PDF)</label>      <input type="file" name="kontoauszug">
+        <small id="wDok" class="form-text text-muted"> Sie können ggf. den Überweisungsbeleg auch ausgedruckt zur Prüfung mitbringen, allerdings können Sie ohne hochgeladenen oder mitgebrachten Überweisungsbeleg nicht an der Prüfung teilnehmen.</small>
+
     </div>
     <div class="form-group">
         <label for="einvErkl"><b>ggf.</b> Einverständniserklärung einer erziehungsberechtigten Person (PDF)</label>  <input type="file" name="einvErkl">

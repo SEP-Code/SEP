@@ -46,13 +46,13 @@
                             <div class="form-group">
                                 <label for="exampleFormControlInput1">Anzahl der auzuwählenden Disziplinen für den Prüfling</label>
                                 <small class="form-text text-muted">
-                                    Falls alle Disziplinen in dieser Sportart Pflicht sind, geben Sie die Anzahl der Disziplinen an.
+                                    Falls alle Disziplinen in dieser Sportart Pflicht sind, geben Sie bitte 0 an.
                                 </small><br>
-                                <input class="form-control" name="disciplinesToSelect" type="number" placeholder="0" id="example-number-input">
+                                <input class="form-control" name="disciplinesToSelect" type="number" placeholder="0" value="0" id="example-number-input">
                             </div>
                             <div class="form-group">
-                                <label for="exampleFormControlInput1">Von den (ausgewählten) Disziplinen muss der Prüfling folgende Anzahl bestehen</label>
-                                <input class="form-control" name="disciplinesToPass" type="number" placeholder="0" id="example-number-input">
+                                <label for="exampleFormControlInput1">Von den Disziplinen muss der Prüfling folgende Anzahl bestehen</label>
+                                <input class="form-control" name="disciplinesToPass" type="number" placeholder="0" value="0" id="example-number-input">
                             </div>
 
                             <div>
