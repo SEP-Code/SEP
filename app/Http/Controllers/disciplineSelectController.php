@@ -12,9 +12,13 @@ use App\User;
 class disciplineSelectController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Returns a view for the candidate where he/she/it can edit their selected disciplines with her/his former entered inputs
      *
-     * @return \Illuminate\Http\Response
+     * @author BE
+     * @return (@see resources/views/Pruefling.select_disciplines_edit.blade.php)
+     * @return \Illuminate\Http\Response $disciplines:
+     * @return \Illuminate\Http\Response $sports:
+     * @version 1.0
      */
     public function index()
     {
@@ -29,6 +33,15 @@ class disciplineSelectController extends Controller
         return view('Pruefling.select_disciplines_edit', compact('disciplines'), compact('sports'))->with('selected_disciplines',$auswahl);
     }
 
+    /**
+     * Returns a view for the candidate where he/she/it can edit their selected disciplines with her/his former entered inputs
+     *
+     * @author BE
+     * @return (@see resources/views/Pruefling.select_disciplines_edit.blade.php)
+     * @return \Illuminate\Http\Response $disciplines:
+     * @return \Illuminate\Http\Response $sports:
+     * @version 1.0
+     */
     public function index2()
     {
         $disciplines = \App\Discipline::all();
@@ -106,6 +119,19 @@ class disciplineSelectController extends Controller
         //
     }
 
+    /**
+     * stores the selected disciplines with pruefline-id in Database table disciplinePerPrueflings
+     * validates the correct amount of selected disciplines
+     *
+     * @author BE
+     * @param  \Illuminate\Http\Request  $request
+     * @return (@see resources/views/Pruefling.anmeldungAbschluss.blade.php)
+     * @return Array Discipline $eingabe:
+     * @return User $user:
+     * @return success-Meldung
+     * @version 1.0
+     *
+     */
     public function select_discipline(Request $request)
     {
         // Validerung:
@@ -119,14 +145,14 @@ class disciplineSelectController extends Controller
         }
         $counts = array_count_values($array_selected_sports_ids);
 
-        //validates whether a check mark was set at all
+        /*//validates whether a check mark was set at all
         foreach (Sport::all() as $sp){
             if ($sp->disciplinesToPass != $sp->disciplinesToSelect and !array_key_exists($sp->id,$counts)){
                 $fail = 'Sie haben nicht die erlaubte Anzahl an Disziplinen ausgewählt. Bitte korrigieren Sie Ihre Angabe!';
                 return redirect()->action('disciplineSelectController@index2')->with('error', $fail);
 
             }
-        }
+        }*/
 
         // validates the number of set hooks
         foreach($counts as $key=>$value)
@@ -163,22 +189,33 @@ class disciplineSelectController extends Controller
         }
 
         //store the obligatory disciplines
-        $sports = Sport::all();
-        foreach ($sports as $sp){
-            if ($sp->disciplinesToPass == $sp->disciplinesToSelect){
-                $disciplines = $sp->disciplines;
+
+                $disciplines = Discipline::all();
                 foreach ($disciplines as $dis){
-                    $eintrag = new disciplinesProPruefling;
-                    $eintrag->pruefling_id = $c_id;
-                    $eintrag->discipline_id = $dis->id;
-                    $eintrag->save();
+                    if($dis->selectable == 0){
+                        $eintrag = new disciplinesProPruefling;
+                        $eintrag->pruefling_id = $c_id;
+                        $eintrag->discipline_id = $dis->id;
+                        $eintrag->save();
+                    }
                 }
-            }
-        }
+
+
         $user = User::find($u_id);
         return view('/Pruefling/anmeldungAbschluss', compact('eingabe'), compact('user'))->with('success', 'Disziplinen ausgewählt');
     }
 
+    /**
+     * updates the selected disciplines with pruefline-id in Database table disciplinePerPrueflings
+     * validates the correct amount of selected disciplines
+     *
+     * @author BE
+     * @param  \Illuminate\Http\Request  $request
+     * @return (@see resources/views/Pruefling.home.blade.php)
+     * @return success-Meldung
+     * @version 1.0
+     *
+     */
     public function update_select_discipline(Request $request)
     {
         // Validerung:
@@ -192,14 +229,14 @@ class disciplineSelectController extends Controller
         }
         $counts = array_count_values($array_selected_sports_ids);
 
-        //validates whether a check mark was set at all
+      /*  //validates whether a check mark was set at all
         foreach (Sport::all() as $sp){
             if ($sp->disciplinesToPass != $sp->disciplinesToSelect and !array_key_exists($sp->id,$counts)){
                 $fail = 'Sie haben nicht die erlaubte Anzahl an Disziplinen ausgewählt. Bitte korrigieren Sie Ihre Angabe!';
                 return redirect()->action('disciplineSelectController@index')->with('error', $fail);
 
             }
-        }
+        }*/
 
         // validates the number of set hooks
         foreach($counts as $key=>$value)
@@ -240,16 +277,13 @@ class disciplineSelectController extends Controller
         }
 
         //store the obligatory disciplines
-        $sports = Sport::all();
-        foreach ($sports as $sp){
-            if ($sp->disciplinesToPass == $sp->disciplinesToSelect){
-                $disciplines = $sp->disciplines;
-                foreach ($disciplines as $dis){
-                    $eintrag = new disciplinesProPruefling;
-                    $eintrag->pruefling_id = $c_id;
-                    $eintrag->discipline_id = $dis->id;
-                    $eintrag->save();
-                }
+        $disciplines = Discipline::all();
+        foreach ($disciplines as $dis){
+            if($dis->selectable == 0){
+                $eintrag = new disciplinesProPruefling;
+                $eintrag->pruefling_id = $c_id;
+                $eintrag->discipline_id = $dis->id;
+                $eintrag->save();
             }
         }
 

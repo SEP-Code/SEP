@@ -46,7 +46,7 @@ class persDatenPrueflingController extends Controller
             'GebDatum' => 'required',
             'geschlecht' => 'required',
             'attest' => 'mimes:pdf|max:5000 ',
-            'kontoauszug' => 'required|mimes:pdf|max:5000',
+            'kontoauszug' => 'mimes:pdf|max:5000',
             'stadt' => 'required'
 
         ]);
@@ -70,9 +70,11 @@ class persDatenPrueflingController extends Controller
         $neuerPersDAtenPrueflingEintrag->geschlecht = $request->input('geschlecht');
         $neuerPersDAtenPrueflingEintrag->user_id = auth()->user()->id;
 
-        $path_kto = $request->file('kontoauszug')->store('uploads/kontoauszuege','public');
-        $neuerPersDAtenPrueflingEintrag->kontoauszug = $path_kto;
-        $neuerPersDAtenPrueflingEintrag->kontoauszug_name = $request->kontoauszug->getClientOriginalName();
+        if ($request->has('kontoauszug')) {
+            $path_kto = $request->file('kontoauszug')->store('uploads/kontoauszuege', 'public');
+            $neuerPersDAtenPrueflingEintrag->kontoauszug = $path_kto;
+            $neuerPersDAtenPrueflingEintrag->kontoauszug_name = $request->kontoauszug->getClientOriginalName();
+        }
 
         // the column attest_name contains the original name of the document. In attest there is the path to the file in the storage
         if ($request->has('attest')){

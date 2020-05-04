@@ -100,7 +100,6 @@ class UserController extends Controller
 
     public function storeNewPruefling(Request $request)
     {
-        dump($request);
         //validation from the given data
         $this->validate($request, [
             'vorname' => 'required',
@@ -110,30 +109,30 @@ class UserController extends Controller
             'GebDatum' => 'required',
             'geschlecht' => 'required',
             'attest' => 'mimes:pdf|max:5000 ',
-            'kontoauszug' => 'required|mimes:pdf|max:5000',
+            'kontoauszug' => 'mimes:pdf|max:5000',
             'stadt' => 'required',
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8'],
 
         ]);
-        if (request()->hasFile('passbild')){
-            request()->validate(['passbild'=>'file|image|max:5000']);
+        if (request()->hasFile('passbild')) {
+            request()->validate(['passbild' => 'file|image|max:5000']);
         }
-        if (request()->hasFile('wdok')){
-            request()->validate(['wdok'=>'file|mimes:pdf|max:5000']);
+        if (request()->hasFile('wdok')) {
+            request()->validate(['wdok' => 'file|mimes:pdf|max:5000']);
         }
-        if (request()->hasFile('einvErkl')){
-            request()->validate(['einvErkl'=>'file|mimes:pdf|max:5000']);
+        if (request()->hasFile('einvErkl')) {
+            request()->validate(['einvErkl' => 'file|mimes:pdf|max:5000']);
         }
 
         $newUser = new User;
         $newUser->name = $request->nachname;
         $newUser->email = $request->email;
-        $newUser->password= Hash::make($request->password);
+        $newUser->password = Hash::make($request->password);
         $newUser->rolle = 1;
         $newUser->save();
 
-        $stadtUndPLZ = $request->input('stadtPLZ').' '. $request->input('stadt');
+        $stadtUndPLZ = $request->input('stadtPLZ') . ' ' . $request->input('stadt');
         $neuerPersDAtenPrueflingEintrag = new PersDatenPruefling;
         $neuerPersDAtenPrueflingEintrag->vorname = $request->input('vorname');
         $neuerPersDAtenPrueflingEintrag->nachname = $request->input('nachname');
@@ -143,10 +142,11 @@ class UserController extends Controller
         $neuerPersDAtenPrueflingEintrag->geschlecht = $request->input('geschlecht');
         $neuerPersDAtenPrueflingEintrag->user_id = $newUser->id;
 
-        $path_kto = $request->file('kontoauszug')->store('uploads/kontoauszuege','public');
-        $neuerPersDAtenPrueflingEintrag->kontoauszug = $path_kto;
-        $neuerPersDAtenPrueflingEintrag->kontoauszug_name = $request->kontoauszug->getClientOriginalName();
-
+        if ($request->has('kontoauszug')) {
+            $path_kto = $request->file('kontoauszug')->store('uploads/kontoauszuege', 'public');
+            $neuerPersDAtenPrueflingEintrag->kontoauszug = $path_kto;
+            $neuerPersDAtenPrueflingEintrag->kontoauszug_name = $request->kontoauszug->getClientOriginalName();
+        }
         // the column attest_name contains the original name of the document. In attest there is the path to the file in the storage
         if ($request->has('attest')){
             $path_attest = $request->file('attest')->store('uploads/atteste','public');
@@ -202,18 +202,16 @@ class UserController extends Controller
         }
 
         //store the obligatory disciplines
-        $sports = Sport::all();
-        foreach ($sports as $sp){
-            if ($sp->disciplinesToPass == $sp->disciplinesToSelect){
-                $disciplines = $sp->disciplines;
-                foreach ($disciplines as $dis){
-                    $eintrag = new disciplinesProPruefling;
-                    $eintrag->pruefling_id = $cid;
-                    $eintrag->discipline_id = $dis->id;
-                    $eintrag->save();
-                }
+        $disciplines = Discipline::all();
+        foreach ($disciplines as $dis){
+            if($dis->selectable == 0){
+                $eintrag = new disciplinesProPruefling;
+                $eintrag->pruefling_id = $cid;
+                $eintrag->discipline_id = $dis->id;
+                $eintrag->save();
             }
         }
+
         $u = \Illuminate\Support\Facades\DB::table('users')
             ->join('pers_daten_prueflings', function ($join){
                 $join->on('pers_daten_prueflings.user_id', '=', 'users.id')
