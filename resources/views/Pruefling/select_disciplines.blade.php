@@ -11,41 +11,31 @@
                         {!! Form::open(['action' => 'disciplineSelectController@select_discipline', 'method' => 'POST' ]) !!}
 
                             @foreach($sports as $sport)
-                                @if($sport->disciplinesToSelect > $sport->disciplinesToPass)
                                     <ul><h4>{{$sport->name}}</h4>
                                         <p>Sie müssen {{$sport->disciplinesToSelect}} Disziplinen dieser Kategorie auswählen.</p>
                                     @foreach($disciplines as $d)
-                                            @if(($d->sport_id == $sport->id) && ($d->selectable == 1))
+                                            @if($d->sport_id == $sport->id)
+                                                @if(($d->selectable == 1))
                                             <ul>
                                                 {{--<input type="checkbox" name="checks[]" value="{{$d->id}}">
                                                 <label>{{$d->name}}</label>--}}
                                                 {{Form::checkbox($d->id,  1)}}
                                                 {{ Form::label('d1', $d->name)}}
                                             </ul>
-                                        @endif
+                                                @else
+                                                    <ul style="list-style-type:none;">
+                                                        <li> <img src="/bilder/check-box.svg" sizes="any" alt="">  {{$d->name}}</li>
+                                                    </ul>
+                                                @endif
+                                            @endif
+
                                     @endforeach
                                     </ul>
-                                @endif
                             @endforeach
 
-                        <p>Folgende Disziplinen sind Pflicht:</p>
-                        @foreach($sports as $sport)
-                            @if($sport->disciplinesToSelect == $sport->disciplinesToPass)
-                                <ul><h4>{{$sport->name}}:</h4>
-                                    <p>Sie müssen {{$sport->disciplinesToPass}} Disziplinen dieser Sportart bestehen.</p>
-                                    @foreach($disciplines as $d)
-                                        @if(($d->sport_id == $sport->id) && ($d->selectable == 0))
-                                            <ul style="list-style-type:none;">
-                                                <li> <img src="/bilder/check-box.svg" sizes="any" alt="">  {{$d->name}}</li>
-                                            </ul>
-                                        @endif
-                                    @endforeach
-                                </ul>
-                            @endif
-                        @endforeach
 
 
-                        <button type="submit" class="btn btn-success"> <img src="/icons/check-circle.svg" alt="" width="20" height="20"> speichern</button>
+                        <button type="submit" class="btn btn-success"> <img src="/bilder/check-circle.svg" alt="" width="20" height="20"> speichern</button>
                         {!! Form::close() !!}
 
 
